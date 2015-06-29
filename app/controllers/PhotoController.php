@@ -34,23 +34,13 @@ class PhotoController extends \BaseController {
 	{
             
             $input = Input::all();
+            $mime = $input['foto']->getMimeType();
             $fileName = time() . "." . strtolower($input['foto']->getClientOriginalExtension());
+            
             $image = Image::make($input['foto']->getRealPath());
-            $image->save($this->path . $fileName)
-                    ->resize(400, 300)
-                    ->save($this->path . 'low-' . $fileName);
-            
-            $mime = $input['foto']->getMimeType();;
-            
-            //Upload to Amazon
-            $s3 = AWS::get('s3');
-            $s3->putObject(array(
-                'Bucket'     => 'images.jacksonlive.es',
-                'Key'        => "test/high/$fileName",
-                'Body'       => "$image",
-                'ACL'        => 'public-read',
-                'ContentType' => $mime,
-            ));
+            $this->upload_s3($image, $fileName, $mime, "high");
+            $image->resize(400, 300);
+            $this->upload_s3($image, $fileName, $mime, "low");
             
             Photo::create([
                 'title' => Input::get('title'),
@@ -105,9 +95,26 @@ class PhotoController extends \BaseController {
 	public function destroy($id)
 	{
             $photo = Photo::find($id);
+            
+            
+            $s3 = AWS::get('s3');
+            $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/high/{$photo->file}"));
+            $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/low/{$photo->file}"));
+                
             $photo->delete();
             return Redirect::route('photo.index');
 	}
+        
+        private function upload_s3($image, $fileName, $mime, $folder) {
+            $s3 = AWS::get('s3');
+            $s3->putObject(array(
+                'Bucket'     => 'images.jacksonlive.es',
+                'Key'        => "test/{$folder}/{$fileName}",
+                'Body'       => "$image",
+                'ACL'        => 'public-read',
+                'ContentType' => $mime,
+            ));
+        }
 
 
         private $_data = array();

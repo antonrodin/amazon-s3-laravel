@@ -1,6 +1,7 @@
 /app/config/packages/aws/aws-sdk-php-laravel/config.php
 /bootstrap/compiled.php
 /vendor
+/public/img/upload
 composer.phar
 composer.lock
 .env.*.php
