@@ -1,7 +1,9 @@
 ## Test project for CRUD operations with Amazon s3 bucket
 
-Using Stable version of AWS Service provider for Laravel 4.* https://github.com/aws/aws-sdk-php-laravel/tree/1.0
+Required Laravel Packages:
 
+* AWS Service provider for Laravel 4.* https://github.com/aws/aws-sdk-php-laravel/tree/1.0
+* Intervention Image https://github.com/Intervention/image
 
 ### Laravel 4 License...
 
