@@ -70,7 +70,8 @@ class PhotoController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		//
+            $this->_data['photo'] = Photo::find($id);
+            return View::make('photo.edit', $this->_data);
 	}
 
 
@@ -82,7 +83,29 @@ class PhotoController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		//
+            //Get Input
+            $input = Input::all();
+            $mime = $input['foto']->getMimeType();
+            $fileName = time() . "." . strtolower($input['foto']->getClientOriginalExtension());
+            
+            $photo = Photo::find($id);
+            $photo->title = Input::get('title');
+            
+            //Delete Old from Bucket
+            $s3 = AWS::get('s3');
+            $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/high/{$photo->file}"));
+            $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/low/{$photo->file}"));
+            
+            //Upload new files
+            $image = Image::make($input['foto']->getRealPath());
+            $this->upload_s3($image, $fileName, $mime, "high");
+            $image->resize(400, 300);
+            $this->upload_s3($image, $fileName, $mime, "low");
+            
+            $photo->file = $fileName;
+            $photo->save();
+            
+            return Redirect::route('photo.index');
 	}
 
 
@@ -96,7 +119,7 @@ class PhotoController extends \BaseController {
 	{
             $photo = Photo::find($id);
             
-            
+            //Delete object from S3 Bucket
             $s3 = AWS::get('s3');
             $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/high/{$photo->file}"));
             $s3->deleteObject(array('Bucket' => 'images.jacksonlive.es','Key' => "test/low/{$photo->file}"));

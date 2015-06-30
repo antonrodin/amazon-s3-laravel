@@ -11,5 +11,5 @@
 |
 */
 
-Route::get('/', 'TestController@home');
+Route::get('/', 'PhotoController@index');
 Route::resource('photo', 'PhotoController');
