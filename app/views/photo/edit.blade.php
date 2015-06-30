@@ -6,10 +6,12 @@
         <div class="form-group">
           <label for="title">Title</label>
           <input type="text" class="form-control" id="title" name="title" value="{{ $photo->title }}">
+          <span class="help-block color-red"><?php echo $errors->first('title'); ?></span>
         </div>
         <div class="form-group">
-          <label for="foto">File</label>
-          <input type="file" class="form-control" id="foto" name="foto">
+          <label for="file">File</label>
+          <input type="file" class="form-control" id="file" name="file">
+          <span class="help-block color-red"><?php echo $errors->first('file'); ?></span>
         </div>
         <button type="submit" class="btn btn-default">Edit</button>
     {{ Form::close() }}
