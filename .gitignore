@@ -1,4 +1,5 @@
 /app/config/packages/aws/aws-sdk-php-laravel/config.php
+/app/config/production/
 /bootstrap/compiled.php
 /vendor
 /nbproject
